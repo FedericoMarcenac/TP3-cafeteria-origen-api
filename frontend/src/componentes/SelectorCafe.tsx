@@ -72,6 +72,9 @@ export function SelectorCafe(_props: Props) {
           </div>
         ))}
       </fieldset>
+            <button type="button" className="btn btn-primary" disabled>
+        Agregar al pedido
+      </button>
     </section>
   );
 }
