@@ -1,18 +1,26 @@
-import type { Producto } from '../api/esquemas';
+import { useState } from 'react';
+import type { Producto, Tamanio } from '../api/esquemas';
+import type { Bebida, EleccionCafe, Origen } from '../dominio/cafe';
 
 interface Props {
   productos: Producto[];
   onAgregar: (producto: Producto) => void;
 }
 
-const BEBIDAS = [
+const BEBIDAS: { valor: Bebida; texto: string }[] = [
   { valor: 'expreso', texto: 'Expreso' },
   { valor: 'filtrado', texto: 'Filtrado' },
 ];
-const TAMANIOS = ['Pocillo', 'Mediano', 'Taza grande'];
-const ORIGENES = ['Colombia', 'Etiopía', 'Brasil'];
+const TAMANIOS: Tamanio[] = ['Pocillo', 'Mediano', 'Taza grande'];
+const ORIGENES: Origen[] = ['Colombia', 'Etiopía', 'Brasil'];
 
 export function SelectorCafe(_props: Props) {
+  const [eleccion, setEleccion] = useState<EleccionCafe>({});
+
+  const completa = Boolean(
+    eleccion.bebida && eleccion.tamanio && eleccion.origen,
+  );
+
   return (
     <section aria-labelledby="titulo-cafe">
       <h2 id="titulo-cafe" className="h5">
@@ -28,7 +36,10 @@ export function SelectorCafe(_props: Props) {
               type="radio"
               name="bebida"
               id={`bebida-${b.valor}`}
-              value={b.valor}
+              checked={eleccion.bebida === b.valor}
+              onChange={() =>
+                setEleccion((anterior) => ({ ...anterior, bebida: b.valor }))
+              }
             />
             <label className="form-check-label" htmlFor={`bebida-${b.valor}`}>
               {b.texto}
@@ -46,7 +57,10 @@ export function SelectorCafe(_props: Props) {
               type="radio"
               name="tamanio"
               id={`tamanio-${t}`}
-              value={t}
+              checked={eleccion.tamanio === t}
+              onChange={() =>
+                setEleccion((anterior) => ({ ...anterior, tamanio: t }))
+              }
             />
             <label className="form-check-label" htmlFor={`tamanio-${t}`}>
               {t}
@@ -64,7 +78,10 @@ export function SelectorCafe(_props: Props) {
               type="radio"
               name="origen"
               id={`origen-${o}`}
-              value={o}
+              checked={eleccion.origen === o}
+              onChange={() =>
+                setEleccion((anterior) => ({ ...anterior, origen: o }))
+              }
             />
             <label className="form-check-label" htmlFor={`origen-${o}`}>
               {o}
@@ -72,7 +89,8 @@ export function SelectorCafe(_props: Props) {
           </div>
         ))}
       </fieldset>
-            <button type="button" className="btn btn-primary" disabled>
+
+      <button type="button" className="btn btn-primary" disabled={!completa}>
         Agregar al pedido
       </button>
     </section>
