@@ -79,4 +79,17 @@ describe('SelectorCafe', () => {
       expect(screen.getByText(descripcion)).toBeInTheDocument();
     }
   });
+
+  it('muestra el precio de cada origen una vez elegidos bebida y tamaño', async () => {
+    const user = userEvent.setup();
+    render(<SelectorCafe productos={productos} onAgregar={() => {}} />);
+
+    expect(screen.queryByText('$7.360')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('radio', { name: 'Expreso' }));
+    await user.click(screen.getByRole('radio', { name: 'Mediano' }));
+
+    expect(screen.getByText('$7.360')).toBeInTheDocument();
+  });
+  
 });
