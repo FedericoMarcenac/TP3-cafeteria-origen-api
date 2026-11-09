@@ -6,6 +6,7 @@ import {
   type EleccionCafe,
   type Origen,
 } from '../dominio/cafe';
+import { formatearPrecio } from '../dominio/precio';
 
 interface Props {
   productos: Producto[];
@@ -42,6 +43,12 @@ export function SelectorCafe({ productos, onAgregar }: Props) {
     const producto = buscarCafe(productos, eleccion);
     if (producto) onAgregar(producto);
   };
+
+   const precioDeOrigen = (origen: Origen): string | undefined => {
+    if (!eleccion.bebida || !eleccion.tamanio) return undefined;
+    const producto = buscarCafe(productos, { ...eleccion, origen });
+    return producto ? formatearPrecio(producto.precio) : undefined;
+  }; 
 
   return (
     <section aria-labelledby="titulo-cafe">
@@ -109,6 +116,7 @@ export function SelectorCafe({ productos, onAgregar }: Props) {
             <label className="form-check-label" htmlFor={`origen-${o}`}>
               {o}
             </label>
+            <span className="ms-2 fw-semibold">{precioDeOrigen(o)}</span>
             <div id={`descripcion-${o}`} className="form-text">
               {descripcionDeOrigen(productos, o)}
             </div>
