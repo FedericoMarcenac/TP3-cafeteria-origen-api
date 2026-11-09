@@ -1,6 +1,6 @@
 import type { z } from 'zod';
 import { API_URL } from './config';
-import { errorSchema, type Producto, productosSchema } from './esquemas';
+import { errorSchema, type ItemPedido, type Pedido, pedidoSchema, type Producto, productosSchema } from './esquemas';
 
 export class ErrorDeApi extends Error {
   readonly status: number;
@@ -53,4 +53,15 @@ async function pedir<T>(ruta: string, esquema: z.ZodType<T>, opciones?: RequestI
 
 export function obtenerProductos(): Promise<Producto[]> {
   return pedir('/productos', productosSchema);
+}
+
+export function crearPedido(mesaId: number | undefined, items: ItemPedido[]): Promise<Pedido> {
+  const itemsDelPedido = items.map(({ productoId, cantidad }) => ({ productoId, cantidad }));
+  // Sin mesa el pedido es para retirar en la barra: no se manda mesaId.
+  const cuerpo = mesaId === undefined ? { items: itemsDelPedido } : { mesaId, items: itemsDelPedido };
+  return pedir('/pedidos', pedidoSchema, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cuerpo),
+  });
 }
