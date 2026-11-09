@@ -210,3 +210,20 @@ describe('Pedidos desde la mesa', () => {
     expect(res.body).toEqual([]);
   });
 });
+
+describe('Nombres de los productos', () => {
+  test('los cafés de Etiopía llevan tilde en el nombre', async () => {
+    const res = await request(app).get('/productos');
+    const etiopes = res.body
+      .filter((producto: { id: number }) => [3, 6, 9, 12, 15, 18].includes(producto.id))
+      .map((producto: { nombre: string }) => producto.nombre);
+    expect(etiopes).toEqual([
+      'Expreso Pocillo Etiopía',
+      'Expreso Mediano Etiopía',
+      'Expreso Taza grande Etiopía',
+      'Filtrado Pocillo Etiopía',
+      'Filtrado Mediano Etiopía',
+      'Filtrado Taza grande Etiopía',
+    ]);
+  });
+});
