@@ -5,6 +5,8 @@ export class Expreso extends Cafe {
   static readonly GRAMOS: GramosPorTamanio = { Pocillo: 18, Mediano: 27, 'Taza grande': 36 };
   static readonly PRECIO_BASE = 2500;
 
+  readonly tipo = 'expreso';
+
   constructor({ id, tamanio, variedad }: DatosCafe) {
     super({
       id,

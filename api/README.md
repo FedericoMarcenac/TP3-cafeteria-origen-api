@@ -99,15 +99,26 @@ curl http://localhost:3000/productos/5
 ```json
 {
   "id": 5,
+  "tipo": "expreso",
   "nombre": "Expreso Mediano Colombia",
-  "tipo": "Expreso",
   "precioBase": 2500,
   "precio": 7360,
   "tamanio": "Mediano",
-  "variedad": "Colombia",
+  "variedad": {
+    "nombre": "Colombia",
+    "descripcion": "Acidez media, cuerpo equilibrado y notas cítricas y florales"
+  },
   "gramos": 27,
   "costoCafe": 4860
 }
+```
+
+- `tipo` es `expreso`, `filtrado` o `pasteleria`.
+- `precio` es el resultado de `calcularPrecio()`: el front lo muestra tal cual, sin recalcular.
+- La pastelería no trae `tamanio`, `variedad`, `gramos` ni `costoCafe`:
+
+```json
+{ "id": 19, "tipo": "pasteleria", "nombre": "Muffin de chocolate", "precioBase": 2500, "precio": 2500 }
 ```
 
 **Crear un pedido** (2 expresos pocillo Brasil + 1 muffin)
@@ -189,6 +200,14 @@ precio = precioBase + (gramos × precio por gramo de la variedad)
 | Filtrado | $3.200 | 6 g | 15 g | 25 g |
 
 Para la pastelería, el precio es directamente el `precioBase`.
+
+### Orígenes
+
+| Variedad | Descripción |
+|---|---|
+| Brasil | Acidez baja, cuerpo intenso y notas a chocolate y frutos secos |
+| Colombia | Acidez media, cuerpo equilibrado y notas cítricas y florales |
+| Etiopía | Acidez alta, cuerpo ligero y notas a frutos rojos y jazmín |
 
 ### Lista completa
 

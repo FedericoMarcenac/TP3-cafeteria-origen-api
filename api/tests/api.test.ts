@@ -107,3 +107,54 @@ describe('Rutas inexistentes', () => {
     expect(res.status).toBe(404);
   });
 });
+
+describe('Productos para el menú de mesa', () => {
+  test('un expreso trae tipo, precio y su variedad con descripción', async () => {
+    const res = await request(app).get('/productos/5');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(
+      expect.objectContaining({
+        id: 5,
+        tipo: 'expreso',
+        tamanio: 'Mediano',
+        precio: 7360,
+        variedad: {
+          nombre: 'Colombia',
+          descripcion: 'Acidez media, cuerpo equilibrado y notas cítricas y florales',
+        },
+      })
+    );
+  });
+
+  test('cada producto trae su tipo: expreso, filtrado o pasteleria', async () => {
+    const res = await request(app).get('/productos');
+    const tipos = res.body.map((producto: { tipo: string }) => producto.tipo);
+    expect(tipos).toEqual([
+      ...Array(9).fill('expreso'),
+      ...Array(9).fill('filtrado'),
+      'pasteleria',
+      'pasteleria',
+    ]);
+  });
+
+  test.each<[number, string]>([
+    [1, 'Brasil'],
+    [2, 'Colombia'],
+    [3, 'Etiopía'],
+  ])('el producto %i muestra el origen %s con acidez, cuerpo y notas', async (id, nombre) => {
+    const res = await request(app).get(`/productos/${id}`);
+    expect(res.body.variedad.nombre).toBe(nombre);
+    expect(res.body.variedad.descripcion).toMatch(/acidez .+ cuerpo .+ notas/i);
+  });
+
+  test('la pastelería trae tipo y precio sin datos de café', async () => {
+    const res = await request(app).get('/productos/19');
+    expect(res.body).toEqual({
+      id: 19,
+      tipo: 'pasteleria',
+      nombre: 'Muffin de chocolate',
+      precioBase: 2500,
+      precio: 2500,
+    });
+  });
+});

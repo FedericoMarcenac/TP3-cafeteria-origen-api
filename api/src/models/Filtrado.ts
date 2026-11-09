@@ -5,6 +5,8 @@ export class Filtrado extends Cafe {
   static readonly GRAMOS: GramosPorTamanio = { Pocillo: 6, Mediano: 15, 'Taza grande': 25 };
   static readonly PRECIO_BASE = 3200;
 
+  readonly tipo = 'filtrado';
+
   constructor({ id, tamanio, variedad }: DatosCafe) {
     super({
       id,
