@@ -24,4 +24,12 @@ describe('SelectorCafe', () => {
     expect(screen.getByRole('radio', { name: 'Etiopía' })).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Brasil' })).toBeInTheDocument();
   });
+  
+  it('arranca con el botón Agregar al pedido deshabilitado', () => {
+    render(<SelectorCafe productos={productos} onAgregar={() => {}} />);
+
+    expect(
+      screen.getByRole('button', { name: 'Agregar al pedido' }),
+    ).toBeDisabled();
+  });
 });
