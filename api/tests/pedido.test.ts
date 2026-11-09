@@ -1,5 +1,5 @@
-const pedidoService = require('../src/services/pedidoService');
-const reporteService = require('../src/services/reporteService');
+import * as pedidoService from '../src/services/pedidoService';
+import * as reporteService from '../src/services/reporteService';
 
 // ids: 5 = Expreso Mediano Colombia ($7.360), 10 = Filtrado Pocillo Brasil ($4.040),
 //      19 = Muffin ($2.500), 20 = Torta ($4.200)

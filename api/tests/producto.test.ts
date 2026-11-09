@@ -1,11 +1,13 @@
-const Producto = require('../src/models/Producto');
-const Expreso = require('../src/models/Expreso');
-const Filtrado = require('../src/models/Filtrado');
-const Pasteleria = require('../src/models/Pasteleria');
-const productoService = require('../src/services/productoService');
+import { Expreso } from '../src/models/Expreso';
+import { Filtrado } from '../src/models/Filtrado';
+import { Pasteleria } from '../src/models/Pasteleria';
+import { Producto, type DatosProducto } from '../src/models/Producto';
+import * as productoService from '../src/services/productoService';
+
+type ConstructorDeProducto = new (datos: DatosProducto) => Producto;
 
 describe('calcularPrecio() - Expreso', () => {
-  test.each([
+  test.each<[string, string, number]>([
     ['Pocillo', 'Brasil', 5020],
     ['Pocillo', 'Colombia', 5740],
     ['Pocillo', 'Etiopia', 6820],
@@ -21,7 +23,7 @@ describe('calcularPrecio() - Expreso', () => {
 });
 
 describe('calcularPrecio() - Filtrado', () => {
-  test.each([
+  test.each<[string, string, number]>([
     ['Pocillo', 'Brasil', 4040],
     ['Pocillo', 'Colombia', 4280],
     ['Pocillo', 'Etiopia', 4640],
@@ -47,7 +49,8 @@ describe('calcularPrecio() - Pasteleria', () => {
 
 describe('Modelo', () => {
   test('Producto no se puede instanciar directamente', () => {
-    expect(() => new Producto({ id: 1, nombre: 'x', precioBase: 1 })).toThrow();
+    const ProductoSinSubclase = Producto as unknown as ConstructorDeProducto;
+    expect(() => new ProductoSinSubclase({ id: 1, nombre: 'x', precioBase: 1 })).toThrow('abstracta');
   });
   test('rechaza variedad o tamaño inválidos', () => {
     expect(() => new Expreso({ id: 1, tamanio: 'Pocillo', variedad: 'Kenia' })).toThrow('Variedad inválida');

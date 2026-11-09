@@ -1,6 +1,6 @@
-const request = require('supertest');
-const app = require('../src/app');
-const pedidoService = require('../src/services/pedidoService');
+import request from 'supertest';
+import app from '../src/app';
+import * as pedidoService from '../src/services/pedidoService';
 
 beforeEach(() => pedidoService.reiniciar());
 

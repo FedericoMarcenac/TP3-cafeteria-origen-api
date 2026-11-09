@@ -1,5 +1,5 @@
-const { Router } = require('express');
-const reporteService = require('../services/reporteService');
+import { Router } from 'express';
+import * as reporteService from '../services/reporteService';
 
 const router = Router();
 
@@ -8,4 +8,4 @@ router.get('/facturacion', (req, res) =>
 );
 router.get('/mas-vendido', (req, res) => res.json(reporteService.masVendido()));
 
-module.exports = router;
+export default router;
