@@ -3,5 +3,7 @@ interface Props {
 }
 
 export function Encabezado({ mesa }: Props) {
-  return <h1>Mesa {mesa}</h1>;
+  return (
+    <h1>{mesa === null ? 'Para retirar en la barra' : `Mesa ${mesa}`}</h1>
+  );
 }
