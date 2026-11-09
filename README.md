@@ -20,6 +20,76 @@ npm start    # http://localhost:3000
 
 El detalle de endpoints, catálogo, arquitectura y tests está en [`api/README.md`](api/README.md).
 
+Para los E2E, la API se levanta con `NODE_ENV=test`, que habilita `POST /__test__/reset` y `POST /__test__/seed`.
+
+## Contrato de la API que usa el front
+
+Todos los errores responden `{ "error": "mensaje" }`. Los datos inválidos dan 400, lo inexistente da 404 y nunca un 500. CORS está habilitado.
+
+### `GET /productos` y `GET /productos/:id`
+
+```json
+{
+  "id": 5,
+  "tipo": "expreso",
+  "nombre": "Expreso Mediano Colombia",
+  "precioBase": 2500,
+  "precio": 7360,
+  "tamanio": "Mediano",
+  "variedad": {
+    "nombre": "Colombia",
+    "descripcion": "Acidez media, cuerpo equilibrado y notas cítricas y florales"
+  },
+  "gramos": 27,
+  "costoCafe": 4860
+}
+```
+
+| Campo | Valores |
+|---|---|
+| `tipo` | `expreso`, `filtrado` o `pasteleria` |
+| `tamanio` | `Pocillo`, `Mediano` o `Taza grande` |
+| `variedad.nombre` | `Brasil`, `Colombia` o `Etiopía` |
+| `precio` | El de `calcularPrecio()`: el front lo muestra tal cual |
+
+La pastelería trae solo `id`, `tipo`, `nombre`, `precioBase` y `precio`. Ids: 1 a 9 expresos, 10 a 18 filtrados, 19 muffin de chocolate y 20 torta selva negra.
+
+### `POST /pedidos`
+
+```json
+{
+  "mesaId": 4,
+  "items": [
+    { "productoId": 5, "cantidad": 2 },
+    { "productoId": 19, "cantidad": 1 }
+  ]
+}
+```
+
+`mesaId` es opcional (mesas de 1 a 12); sin mesa, el pedido es para retirar en la barra. Responde **201**:
+
+```json
+{
+  "id": 2,
+  "mesaId": 4,
+  "items": [
+    { "productoId": 5, "cantidad": 2 },
+    { "productoId": 19, "cantidad": 1 }
+  ],
+  "estado": "pendiente",
+  "total": 17220
+}
+```
+
+| Código | Cuándo | Ejemplo de `error` |
+|---|---|---|
+| 400 | Sin items, cantidad no entera o menor a 1, `productoId` o `mesaId` no entero, JSON mal formado | `La cantidad debe ser un entero mayor a 0` |
+| 404 | Producto o mesa inexistente | `Mesa 99 no encontrada` |
+
+### `GET /pedidos/:id`
+
+Devuelve el mismo formato que `POST /pedidos`, con el `estado` actual (`pendiente`, `en_preparacion` o `entregado`). Si no existe: 404 `{ "error": "Pedido 42 no encontrado" }`.
+
 ## Equipo
 
 | Integrante | Legajo |

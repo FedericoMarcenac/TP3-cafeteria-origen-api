@@ -59,6 +59,17 @@ $env:PORT=4000; npm start      # Windows PowerShell
 
 > Los datos se guardan **en memoria**: al reiniciar el servidor, los pedidos se borran.
 
+### Modo test (para los E2E del front)
+
+Con `NODE_ENV=test` se habilitan `POST /__test__/reset` y `POST /__test__/seed`. Fuera de ese modo esas rutas responden 404.
+
+```bash
+NODE_ENV=test npm run dev                    # macOS / Linux
+$env:NODE_ENV="test"; npm run dev            # Windows PowerShell
+```
+
+El seed deja siempre un único pedido: el #1, de la mesa 1, con una torta selva negra y en estado `entregado`. El próximo pedido que se cree es el #2.
+
 ## Endpoints
 
 | Método | Ruta | Descripción | Respuesta |
@@ -70,6 +81,8 @@ $env:PORT=4000; npm start      # Windows PowerShell
 | GET | `/pedidos/:id` | Pedido según su id | 200 / 404 |
 | GET | `/reportes/facturacion` | Facturación total | 200 |
 | GET | `/reportes/mas-vendido` | Producto más vendido | 200 |
+| POST | `/__test__/reset` | Solo con `NODE_ENV=test`: borra los pedidos y reinicia los ids | 204 |
+| POST | `/__test__/seed` | Solo con `NODE_ENV=test`: reinicia y carga los datos fijos de los E2E | 201 |
 
 ### Formato del pedido
 
@@ -283,7 +296,8 @@ api/
 │   │   └── Pasteleria.ts
 │   ├── data/
 │   │   ├── catalogo.ts           # Genera los 20 productos
-│   │   └── mesas.ts              # Mesas válidas para los QR
+│   │   ├── mesas.ts              # Mesas válidas para los QR
+│   │   └── semilla.ts            # Datos fijos de POST /__test__/seed
 │   ├── services/
 │   │   ├── productoService.ts    # Consulta del catálogo
 │   │   ├── pedidoService.ts      # Pedidos, validaciones y total
@@ -291,11 +305,14 @@ api/
 │   └── routes/
 │       ├── productos.ts
 │       ├── pedidos.ts
-│       └── reportes.ts
+│       ├── reportes.ts
+│       └── test.ts               # Reset y seed, solo con NODE_ENV=test
 └── tests/
     ├── producto.test.ts
     ├── pedido.test.ts
-    └── api.test.ts
+    ├── api.test.ts
+    ├── errores.test.ts
+    └── endpoints-de-test.test.ts
 ```
 
 ### Jerarquía de productos
@@ -317,7 +334,7 @@ Todos los productos tienen `id`, `nombre`, `precioBase` y el método `calcularPr
 - **El total no se guarda.** Se calcula siempre desde `calcularPrecio()` × cantidad, así nunca queda desactualizado.
 - **Reportes sin lógica duplicada.** `masVendido()` se calcula a partir de `cantidadPorProducto()`.
 - **Rutas sin lógica de negocio.** Reciben el request y delegan en los servicios.
-- **`app` separada de `listen`.** `app.ts` exporta la aplicación y `server.ts` la levanta, lo que permite testearla con Supertest sin abrir un puerto.
+- **`app` separada de `listen`.** `app.ts` exporta la aplicación y `server.ts` la levanta, lo que permite testearla con Supertest sin abrir un puerto. `crearApp({ rutasDeTest })` permite probar también que las rutas de test no existen fuera de `NODE_ENV=test`.
 - **Tipos en el borde.** El body de `POST /pedidos` entra como `unknown` y se valida campo por campo antes de convertirse en `ItemPedido[]`; el resto del código trabaja con tipos ya validados.
 - **Datos en memoria.** El enunciado no pide base de datos; `pedidoService.reiniciar()` limpia el estado entre tests.
 
@@ -356,13 +373,15 @@ curl -X POST http://localhost:3000/pedidos \
 npm test
 ```
 
-Se usan **Jest** (con **ts-jest**, que también revisa los tipos de los tests) y **Supertest**. Hay 54 tests en 3 suites:
+Se usan **Jest** (con **ts-jest**, que también revisa los tipos de los tests) y **Supertest**. Hay 86 tests en 5 suites:
 
 | Suite | Qué prueba | Tests |
 |---|---|---|
 | `tests/producto.test.ts` | `calcularPrecio()` de las 18 combinaciones de café y de la pastelería (contra la tabla del enunciado), clase abstracta, validaciones del modelo y catálogo de 20 productos | 26 |
-| `tests/pedido.test.ts` | Total del pedido, ids, validaciones, facturación, cantidad por producto y más vendido | 12 |
-| `tests/api.test.ts` | Los 7 endpoints con casos de éxito y de error (400 y 404) | 16 |
+| `tests/pedido.test.ts` | Total del pedido, mesa, ids, validaciones, facturación, cantidad por producto y más vendido | 16 |
+| `tests/api.test.ts` | Los endpoints con casos de éxito y de error, el contrato de productos para el menú y los pedidos desde la mesa | 30 |
+| `tests/errores.test.ts` | Errores siempre con `{ error }`, 4xx en vez de 500 y CORS | 10 |
+| `tests/endpoints-de-test.test.ts` | Reset y seed para los E2E, y que no existan fuera de `NODE_ENV=test` | 4 |
 
 ## Equipo
 
