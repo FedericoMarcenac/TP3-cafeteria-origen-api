@@ -1,3 +1,4 @@
 export function formatearPrecio(valor: number): string {
-  return `$${valor}`;
+  const conPuntos = String(valor).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `$${conPuntos}`;
 }
