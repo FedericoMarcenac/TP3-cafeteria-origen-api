@@ -23,6 +23,21 @@ describe('Total de un pedido', () => {
   });
 });
 
+describe('Mesa del pedido', () => {
+  test('guarda la mesa que viene del QR', () => {
+    expect(pedidoService.crear({ mesaId: 4, items: [{ productoId: 19, cantidad: 1 }] }).mesaId).toBe(4);
+  });
+  test('sin mesa queda en null: se retira en la barra', () => {
+    expect(pedidoService.crear({ items: [{ productoId: 19, cantidad: 1 }] }).mesaId).toBeNull();
+  });
+  test('rechaza una mesa que no existe', () => {
+    expect(() => pedidoService.crear({ mesaId: 0, items: [{ productoId: 19, cantidad: 1 }] })).toThrow('Mesa 0 no encontrada');
+  });
+  test('rechaza una mesa que no es un entero', () => {
+    expect(() => pedidoService.crear({ mesaId: 'cuatro', items: [{ productoId: 19, cantidad: 1 }] })).toThrow('número entero');
+  });
+});
+
 describe('Validaciones', () => {
   test('rechaza pedido sin items', () => {
     expect(() => pedidoService.crear({ items: [] })).toThrow('al menos un item');
