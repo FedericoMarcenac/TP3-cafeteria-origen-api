@@ -13,5 +13,11 @@ export function buscarCafe(
   productos: Producto[],
   eleccion: EleccionCafe,
 ): Producto | undefined {
-  return productos.find((p) => p.id === 5);
+  return productos.find(
+    (p) =>
+      p.tipo !== 'pasteleria' &&
+      p.tipo === eleccion.bebida &&
+      p.tamanio === eleccion.tamanio &&
+      p.variedad.nombre === eleccion.origen,
+  );
 }
