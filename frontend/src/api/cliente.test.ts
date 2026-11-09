@@ -1,7 +1,14 @@
 import { http, HttpResponse } from 'msw';
 import { describe, expect, test } from 'vitest';
 import { server } from '../mocks/server';
-import { ErrorDeApi, ErrorDeConexion, ErrorDeContrato, mensajeDeError, obtenerProductos } from './cliente';
+import {
+  crearPedido,
+  ErrorDeApi,
+  ErrorDeConexion,
+  ErrorDeContrato,
+  mensajeDeError,
+  obtenerProductos,
+} from './cliente';
 import { API_URL } from './config';
 
 function responderProductos(respuesta: () => Response) {
@@ -64,5 +71,54 @@ describe('mensajeDeError', () => {
 
   test('da un mensaje genérico si lo que llegó no es un error', () => {
     expect(mensajeDeError('algo raro')).toBe('Ocurrió un error inesperado. Probá de nuevo.');
+  });
+});
+
+const ITEMS = [
+  { productoId: 5, cantidad: 2 },
+  { productoId: 19, cantidad: 1 },
+];
+
+describe('crearPedido', () => {
+  test('envía mesaId e items y devuelve el pedido creado', async () => {
+    const pedido = await crearPedido(4, ITEMS);
+
+    expect(pedido).toEqual({ id: 1, mesaId: 4, items: ITEMS, estado: 'pendiente', total: 17220 });
+  });
+
+  test('manda el cuerpo como JSON con mesaId e items', async () => {
+    let cuerpo: unknown;
+    server.use(
+      http.post(`${API_URL}/pedidos`, async ({ request }) => {
+        cuerpo = await request.json();
+        return HttpResponse.json({ id: 1, mesaId: 4, items: ITEMS, estado: 'pendiente', total: 17220 }, { status: 201 });
+      })
+    );
+
+    await crearPedido(4, ITEMS);
+
+    expect(cuerpo).toEqual({ mesaId: 4, items: ITEMS });
+  });
+
+  test('si es para la barra no manda mesaId', async () => {
+    let cuerpo: unknown;
+    server.use(
+      http.post(`${API_URL}/pedidos`, async ({ request }) => {
+        cuerpo = await request.json();
+        return HttpResponse.json({ id: 1, mesaId: null, items: ITEMS, estado: 'pendiente', total: 17220 }, { status: 201 });
+      })
+    );
+
+    await crearPedido(undefined, ITEMS);
+
+    expect(cuerpo).toEqual({ items: ITEMS });
+    expect(cuerpo).not.toHaveProperty('mesaId');
+  });
+
+  test('si la API rechaza el pedido, lanza ErrorDeApi con su mensaje y su código', async () => {
+    const error = await crearPedido(99, ITEMS).catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(ErrorDeApi);
+    expect(error).toMatchObject({ message: 'Mesa 99 no encontrada', status: 404 });
   });
 });
