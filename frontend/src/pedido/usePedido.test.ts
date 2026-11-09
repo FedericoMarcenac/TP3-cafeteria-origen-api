@@ -32,6 +32,31 @@ describe('usePedido', () => {
     expect(onConfirmado).toHaveBeenCalledTimes(1);
   });
 
+  test('si la API rechaza el pedido queda en error con su mensaje y no avisa', async () => {
+    const onConfirmado = vi.fn();
+    const { result } = renderHook(() => usePedido(onConfirmado));
+
+    await act(async () => {
+      await result.current.confirmar(99, ITEMS);
+    });
+
+    expect(result.current.envio).toEqual({ estado: 'error', mensaje: 'Mesa 99 no encontrada' });
+    expect(onConfirmado).not.toHaveBeenCalled();
+  });
+
+  test('después de un error se puede volver a confirmar', async () => {
+    const { result } = renderHook(() => usePedido());
+
+    await act(async () => {
+      await result.current.confirmar(99, ITEMS);
+    });
+    await act(async () => {
+      await result.current.confirmar(4, ITEMS);
+    });
+
+    expect(result.current.envio).toMatchObject({ estado: 'confirmado' });
+  });
+
   test('actualizar trae el estado nuevo del pedido', async () => {
     const { result } = renderHook(() => usePedido());
     await act(async () => {
