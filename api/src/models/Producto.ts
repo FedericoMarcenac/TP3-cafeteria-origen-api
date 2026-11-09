@@ -1,6 +1,24 @@
+export interface DatosProducto {
+  id: number;
+  nombre: string;
+  precioBase: number;
+}
+
+export interface ProductoJSON {
+  id: number;
+  nombre: string;
+  tipo: string;
+  precioBase: number;
+  precio: number;
+}
+
 // Clase base: define el contrato común (id, nombre, precioBase, calcularPrecio).
-class Producto {
-  constructor({ id, nombre, precioBase }) {
+export abstract class Producto {
+  id: number;
+  nombre: string;
+  precioBase: number;
+
+  constructor({ id, nombre, precioBase }: DatosProducto) {
     if (new.target === Producto) {
       throw new Error('Producto es abstracta: usá Expreso, Filtrado o Pasteleria');
     }
@@ -9,11 +27,9 @@ class Producto {
     this.precioBase = precioBase;
   }
 
-  calcularPrecio() {
-    throw new Error('calcularPrecio() debe implementarse en la subclase');
-  }
+  abstract calcularPrecio(): number;
 
-  toJSON() {
+  toJSON(): ProductoJSON {
     return {
       id: this.id,
       nombre: this.nombre,
@@ -23,5 +39,3 @@ class Producto {
     };
   }
 }
-
-module.exports = Producto;
