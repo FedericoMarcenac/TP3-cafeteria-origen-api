@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import type { Producto, Tamanio } from '../api/esquemas';
-import type { Bebida, EleccionCafe, Origen } from '../dominio/cafe';
+import {
+  buscarCafe,
+  type Bebida,
+  type EleccionCafe,
+  type Origen,
+} from '../dominio/cafe';
 
 interface Props {
   productos: Producto[];
@@ -14,12 +19,17 @@ const BEBIDAS: { valor: Bebida; texto: string }[] = [
 const TAMANIOS: Tamanio[] = ['Pocillo', 'Mediano', 'Taza grande'];
 const ORIGENES: Origen[] = ['Colombia', 'Etiopía', 'Brasil'];
 
-export function SelectorCafe(_props: Props) {
+export function SelectorCafe({ productos, onAgregar }: Props) {
   const [eleccion, setEleccion] = useState<EleccionCafe>({});
 
   const completa = Boolean(
     eleccion.bebida && eleccion.tamanio && eleccion.origen,
   );
+
+  const agregar = () => {
+    const producto = buscarCafe(productos, eleccion);
+    if (producto) onAgregar(producto);
+  };
 
   return (
     <section aria-labelledby="titulo-cafe">
@@ -90,7 +100,12 @@ export function SelectorCafe(_props: Props) {
         ))}
       </fieldset>
 
-      <button type="button" className="btn btn-primary" disabled={!completa}>
+      <button
+        type="button"
+        className="btn btn-primary"
+        disabled={!completa}
+        onClick={agregar}
+      >
         Agregar al pedido
       </button>
     </section>
