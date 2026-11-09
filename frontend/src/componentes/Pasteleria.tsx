@@ -6,7 +6,7 @@ interface Props {
   onAgregar: (producto: Producto) => void;
 }
 
-export function Pasteleria({ productos }: Props) {
+export function Pasteleria({ productos, onAgregar }: Props) {
   const dulces = productos.filter((p) => p.tipo === 'pasteleria');
 
   return (
@@ -16,9 +16,22 @@ export function Pasteleria({ productos }: Props) {
       </h2>
       <ul className="list-group">
         {dulces.map((p) => (
-          <li key={p.id} className="list-group-item">
-            <span>{p.nombre}</span>{' '}
-            <span className="fw-semibold">{formatearPrecio(p.precio)}</span>
+          <li
+            key={p.id}
+            className="list-group-item d-flex justify-content-between align-items-center"
+          >
+            <span>
+              {p.nombre}{' '}
+              <span className="fw-semibold">{formatearPrecio(p.precio)}</span>
+            </span>
+            <button
+              type="button"
+              className="btn btn-primary btn-sm"
+              aria-label={`Agregar ${p.nombre}`}
+              onClick={() => onAgregar(p)}
+            >
+              Agregar
+            </button>
           </li>
         ))}
       </ul>
