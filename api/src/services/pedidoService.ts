@@ -1,4 +1,5 @@
 import * as productoService from './productoService';
+import { existeMesa } from '../data/mesas';
 import { ErrorApi } from '../errors';
 
 export const ESTADOS = ['pendiente', 'en_preparacion', 'entregado'] as const;
@@ -12,6 +13,7 @@ export interface ItemPedido {
 
 export interface Pedido {
   id: number;
+  mesaId: number | null;
   items: ItemPedido[];
   estado: Estado;
 }
@@ -21,6 +23,7 @@ export interface PedidoConTotal extends Pedido {
 }
 
 export interface DatosPedido {
+  mesaId?: unknown;
   items?: unknown;
   estado?: unknown;
 }
@@ -36,6 +39,15 @@ function leerEntero(item: unknown, campo: string): number | undefined {
   if (typeof item !== 'object' || item === null) return undefined;
   const valor: unknown = Reflect.get(item, campo);
   return typeof valor === 'number' && Number.isInteger(valor) ? valor : undefined;
+}
+
+function validarMesa(mesaId: unknown): number | null {
+  if (mesaId === undefined || mesaId === null) return null;
+  if (typeof mesaId !== 'number' || !Number.isInteger(mesaId)) {
+    throw new ErrorApi(400, 'La mesa debe ser un número entero');
+  }
+  if (!existeMesa(mesaId)) throw new ErrorApi(404, `Mesa ${mesaId} no encontrada`);
+  return mesaId;
 }
 
 function validarItems(items: unknown): ItemPedido[] {
@@ -69,12 +81,13 @@ function conTotal(pedido: Pedido): PedidoConTotal {
   return { ...pedido, total: calcularTotal(pedido) };
 }
 
-export function crear({ items, estado = 'pendiente' }: DatosPedido = {}): PedidoConTotal {
+export function crear({ mesaId, items, estado = 'pendiente' }: DatosPedido = {}): PedidoConTotal {
+  const mesa = validarMesa(mesaId);
   const itemsValidos = validarItems(items);
   if (!esEstado(estado)) {
     throw new ErrorApi(400, `Estado inválido. Valores permitidos: ${ESTADOS.join(', ')}`);
   }
-  const pedido: Pedido = { id: siguienteId++, items: itemsValidos, estado };
+  const pedido: Pedido = { id: siguienteId++, mesaId: mesa, items: itemsValidos, estado };
   pedidos.push(pedido);
   return conTotal(pedido);
 }
