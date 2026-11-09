@@ -23,4 +23,12 @@ describe('buscarCafe', () => {
     });
     expect(cafe?.id).toBe(18);
   });
+
+  it('devuelve undefined si la elección está incompleta', () => {
+    const cafe = buscarCafe(productos, {
+      bebida: 'expreso',
+      tamanio: 'Mediano',
+    });
+    expect(cafe).toBeUndefined();
+  });
 });
