@@ -1,8 +1,8 @@
 # ☕ Cafetería Origen – API de pedidos
 
-API REST desarrollada con **Node.js y Express** para organizar los pedidos de *Origen*, una cafetería de especialidad que vende café de Colombia, Etiopía y Brasil, preparado como expreso o filtrado, además de pastelería. Hoy los pedidos se anotan en un cuaderno: esta API los centraliza, calcula los totales y genera reportes de ventas.
+API REST desarrollada con **Node.js, Express y TypeScript** para organizar los pedidos de *Origen*, una cafetería de especialidad que vende café de Colombia, Etiopía y Brasil, preparado como expreso o filtrado, además de pastelería. Hoy los pedidos se anotan en un cuaderno: esta API los centraliza, calcula los totales y genera reportes de ventas.
 
-> Trabajo grupal – Parcial I
+> Trabajo grupal – Parcial I, migrada a TypeScript para el TP3
 
 ## Contenido
 
@@ -23,21 +23,31 @@ API REST desarrollada con **Node.js y Express** para organizar los pedidos de *O
 | Herramienta | Uso |
 |---|---|
 | Node.js | Entorno de ejecución |
+| TypeScript | Tipado estático (`strict: true`) |
 | Express | Servidor y rutas |
-| Jest | Framework de tests |
+| Jest + ts-jest | Framework de tests |
 | Supertest | Tests de los endpoints |
+| tsx | Modo desarrollo con recarga automática |
 
 ## Cómo correrlo
 
 Requiere [Node.js](https://nodejs.org) (versión LTS).
 
 ```bash
-git clone https://github.com/FedericoMarcenac/cafeteria-origen-api.git
-cd cafeteria-origen-api
+git clone https://github.com/FedericoMarcenac/TP3-cafeteria-origen-api.git
+cd TP3-cafeteria-origen-api/api
 npm install
 npm test     # corre los tests
-npm start    # levanta el servidor en http://localhost:3000
+npm start    # compila y levanta el servidor en http://localhost:3000
 ```
+
+| Comando | Qué hace |
+|---|---|
+| `npm run dev` | Levanta el servidor desde `src/` y se reinicia al guardar |
+| `npm run build` | Compila TypeScript a `dist/` |
+| `npm start` | Compila y levanta `dist/server.js` |
+| `npm run typecheck` | Revisa los tipos de `src/` y `tests/` sin compilar |
+| `npm test` | Corre los tests |
 
 Para usar otro puerto:
 
@@ -210,33 +220,35 @@ Para la pastelería, el precio es directamente el `precioBase`.
 El proyecto separa responsabilidades en capas: **rutas → servicios → modelos**.
 
 ```
-cafeteria-origen-api/
+api/
 ├── package.json
+├── tsconfig.json                 # Configuración de TypeScript (src + tests)
+├── tsconfig.build.json           # Compilación de src/ a dist/
 ├── README.md
 ├── src/
-│   ├── app.js                    # App Express, rutas y manejo de errores
-│   ├── server.js                 # Arranque del servidor (listen)
-│   ├── errors.js                 # ErrorApi: error con código HTTP
+│   ├── app.ts                    # App Express, rutas y manejo de errores
+│   ├── server.ts                 # Arranque del servidor (listen)
+│   ├── errors.ts                 # ErrorApi: error con código HTTP
 │   ├── models/
-│   │   ├── Producto.js           # Clase base abstracta
-│   │   ├── Cafe.js               # Lógica común de expreso y filtrado
-│   │   ├── Expreso.js
-│   │   ├── Filtrado.js
-│   │   └── Pasteleria.js
+│   │   ├── Producto.ts           # Clase base abstracta
+│   │   ├── Cafe.ts               # Lógica común de expreso y filtrado
+│   │   ├── Expreso.ts
+│   │   ├── Filtrado.ts
+│   │   └── Pasteleria.ts
 │   ├── data/
-│   │   └── catalogo.js           # Genera los 20 productos
+│   │   └── catalogo.ts           # Genera los 20 productos
 │   ├── services/
-│   │   ├── productoService.js    # Consulta del catálogo
-│   │   ├── pedidoService.js      # Pedidos, validaciones y total
-│   │   └── reporteService.js     # Facturación y más vendido
+│   │   ├── productoService.ts    # Consulta del catálogo
+│   │   ├── pedidoService.ts      # Pedidos, validaciones y total
+│   │   └── reporteService.ts     # Facturación y más vendido
 │   └── routes/
-│       ├── productos.js
-│       ├── pedidos.js
-│       └── reportes.js
+│       ├── productos.ts
+│       ├── pedidos.ts
+│       └── reportes.ts
 └── tests/
-    ├── producto.test.js
-    ├── pedido.test.js
-    └── api.test.js
+    ├── producto.test.ts
+    ├── pedido.test.ts
+    └── api.test.ts
 ```
 
 ### Jerarquía de productos
@@ -258,7 +270,8 @@ Todos los productos tienen `id`, `nombre`, `precioBase` y el método `calcularPr
 - **El total no se guarda.** Se calcula siempre desde `calcularPrecio()` × cantidad, así nunca queda desactualizado.
 - **Reportes sin lógica duplicada.** `masVendido()` se calcula a partir de `cantidadPorProducto()`.
 - **Rutas sin lógica de negocio.** Reciben el request y delegan en los servicios.
-- **`app` separada de `listen`.** `app.js` exporta la aplicación y `server.js` la levanta, lo que permite testearla con Supertest sin abrir un puerto.
+- **`app` separada de `listen`.** `app.ts` exporta la aplicación y `server.ts` la levanta, lo que permite testearla con Supertest sin abrir un puerto.
+- **Tipos en el borde.** El body de `POST /pedidos` entra como `unknown` y se valida campo por campo antes de convertirse en `ItemPedido[]`; el resto del código trabaja con tipos ya validados.
 - **Datos en memoria.** El enunciado no pide base de datos; `pedidoService.reiniciar()` limpia el estado entre tests.
 
 ## Manejo de errores
@@ -289,13 +302,13 @@ curl -X POST http://localhost:3000/pedidos \
 npm test
 ```
 
-Se usan **Jest** y **Supertest**. Hay 54 tests en 3 suites:
+Se usan **Jest** (con **ts-jest**, que también revisa los tipos de los tests) y **Supertest**. Hay 54 tests en 3 suites:
 
 | Suite | Qué prueba | Tests |
 |---|---|---|
-| `tests/producto.test.js` | `calcularPrecio()` de las 18 combinaciones de café y de la pastelería (contra la tabla del enunciado), clase abstracta, validaciones del modelo y catálogo de 20 productos | 26 |
-| `tests/pedido.test.js` | Total del pedido, ids, validaciones, facturación, cantidad por producto y más vendido | 12 |
-| `tests/api.test.js` | Los 7 endpoints con casos de éxito y de error (400 y 404) | 16 |
+| `tests/producto.test.ts` | `calcularPrecio()` de las 18 combinaciones de café y de la pastelería (contra la tabla del enunciado), clase abstracta, validaciones del modelo y catálogo de 20 productos | 26 |
+| `tests/pedido.test.ts` | Total del pedido, ids, validaciones, facturación, cantidad por producto y más vendido | 12 |
+| `tests/api.test.ts` | Los 7 endpoints con casos de éxito y de error (400 y 404) | 16 |
 
 ## Equipo
 
