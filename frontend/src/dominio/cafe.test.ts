@@ -14,4 +14,13 @@ describe('buscarCafe', () => {
     });
     expect(cafe?.id).toBe(5);
   });
+
+  it('distingue el filtrado por tipo y encuentra taza grande de Etiopía', () => {
+    const cafe = buscarCafe(productos, {
+      bebida: 'filtrado',
+      tamanio: 'Taza grande',
+      origen: 'Etiopía',
+    });
+    expect(cafe?.id).toBe(18);
+  });
 });
