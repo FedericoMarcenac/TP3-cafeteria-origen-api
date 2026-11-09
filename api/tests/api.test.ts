@@ -34,6 +34,7 @@ describe('POST /pedidos', () => {
     expect(res.status).toBe(201);
     expect(res.body).toEqual({
       id: 1,
+      mesaId: null,
       items: [{ productoId: 1, cantidad: 2 }, { productoId: 19, cantidad: 1 }],
       estado: 'pendiente',
       total: 5020 * 2 + 2500,
@@ -156,5 +157,56 @@ describe('Productos para el menú de mesa', () => {
       precioBase: 2500,
       precio: 2500,
     });
+  });
+});
+
+describe('Pedidos desde la mesa', () => {
+  const pedidoDeLaMesa4 = {
+    mesaId: 4,
+    items: [
+      { productoId: 5, cantidad: 2 },
+      { productoId: 19, cantidad: 1 },
+    ],
+  };
+
+  test('POST /pedidos con mesaId devuelve 201 con la mesa, el estado y el total', async () => {
+    const res = await request(app).post('/pedidos').send(pedidoDeLaMesa4);
+    expect(res.status).toBe(201);
+    expect(res.body).toEqual({ id: 1, ...pedidoDeLaMesa4, estado: 'pendiente', total: 17220 });
+  });
+
+  test('sin mesaId el pedido es para retirar en la barra', async () => {
+    const res = await request(app).post('/pedidos').send({ items: pedidoDeLaMesa4.items });
+    expect(res.status).toBe(201);
+    expect(res.body.mesaId).toBeNull();
+  });
+
+  test('GET /pedidos/:id devuelve la mesa, el estado, los items y el total', async () => {
+    const { body: creado } = await request(app).post('/pedidos').send(pedidoDeLaMesa4);
+    const res = await request(app).get(`/pedidos/${creado.id}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ id: creado.id, ...pedidoDeLaMesa4, estado: 'pendiente', total: 17220 });
+  });
+
+  test('una mesa inexistente responde 404 con el mensaje', async () => {
+    const res = await request(app).post('/pedidos').send({ ...pedidoDeLaMesa4, mesaId: 99 });
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ error: 'Mesa 99 no encontrada' });
+  });
+
+  test.each<[string, unknown]>([
+    ['texto', 'cuatro'],
+    ['decimal', 4.5],
+    ['número en texto', '4'],
+  ])('un mesaId %s responde 400', async (_caso, mesaId) => {
+    const res = await request(app).post('/pedidos').send({ ...pedidoDeLaMesa4, mesaId });
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ error: 'La mesa debe ser un número entero' });
+  });
+
+  test('un pedido rechazado por la mesa no se guarda', async () => {
+    await request(app).post('/pedidos').send({ ...pedidoDeLaMesa4, mesaId: 99 });
+    const res = await request(app).get('/pedidos');
+    expect(res.body).toEqual([]);
   });
 });

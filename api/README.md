@@ -74,14 +74,16 @@ $env:PORT=4000; npm start      # Windows PowerShell
 
 ```json
 {
+  "mesaId": 4,
   "items": [
-    { "productoId": 1, "cantidad": 2 },
+    { "productoId": 5, "cantidad": 2 },
     { "productoId": 19, "cantidad": 1 }
   ],
   "estado": "pendiente"
 }
 ```
 
+- `mesaId` es opcional: es la mesa del QR (de 1 a 12). Si no viene, el pedido es para retirar en la barra y se guarda como `null`.
 - `items` es obligatorio y debe tener al menos un elemento.
 - `cantidad` debe ser un entero mayor a 0.
 - `estado` es opcional (por defecto `pendiente`). Valores válidos: `pendiente`, `en_preparacion`, `entregado`.
@@ -132,12 +134,34 @@ curl -X POST http://localhost:3000/pedidos \
 ```json
 {
   "id": 1,
+  "mesaId": null,
   "items": [
     { "productoId": 1, "cantidad": 2 },
     { "productoId": 19, "cantidad": 1 }
   ],
   "estado": "pendiente",
   "total": 12540
+}
+```
+
+**Crear un pedido desde la mesa 4** (2 expresos medianos Colombia + 1 muffin)
+
+```bash
+curl -X POST http://localhost:3000/pedidos \
+  -H "Content-Type: application/json" \
+  -d '{"mesaId":4,"items":[{"productoId":5,"cantidad":2},{"productoId":19,"cantidad":1}]}'
+```
+
+```json
+{
+  "id": 2,
+  "mesaId": 4,
+  "items": [
+    { "productoId": 5, "cantidad": 2 },
+    { "productoId": 19, "cantidad": 1 }
+  ],
+  "estado": "pendiente",
+  "total": 17220
 }
 ```
 
@@ -255,7 +279,8 @@ api/
 │   │   ├── Filtrado.ts
 │   │   └── Pasteleria.ts
 │   ├── data/
-│   │   └── catalogo.ts           # Genera los 20 productos
+│   │   ├── catalogo.ts           # Genera los 20 productos
+│   │   └── mesas.ts              # Mesas válidas para los QR
 │   ├── services/
 │   │   ├── productoService.ts    # Consulta del catálogo
 │   │   ├── pedidoService.ts      # Pedidos, validaciones y total
@@ -300,8 +325,8 @@ Todos los errores responden con JSON: `{ "error": "mensaje" }`.
 | Código | Cuándo |
 |---|---|
 | 201 | Pedido creado |
-| 400 | Pedido sin items, cantidad inválida, `productoId` no numérico, estado inválido o JSON mal formado |
-| 404 | Producto o pedido inexistente, o ruta inexistente |
+| 400 | Pedido sin items, cantidad inválida, `productoId` o `mesaId` no entero, estado inválido o JSON mal formado |
+| 404 | Producto, pedido o mesa inexistente, o ruta inexistente |
 
 Ejemplo:
 
