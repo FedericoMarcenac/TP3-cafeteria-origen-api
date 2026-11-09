@@ -7,7 +7,7 @@ Menú web para pedir desde la mesa escaneando un QR, construido sobre la API del
 | Carpeta | Contenido |
 |---|---|
 | [`api/`](api/) | API REST en Node.js + Express + TypeScript |
-| `frontend/` | Menú en Vite + React + TypeScript |
+| [`frontend/`](frontend/) | Menú en Vite + React + TypeScript |
 
 ## Levantar la API
 
@@ -21,6 +21,34 @@ npm start    # http://localhost:3000
 El detalle de endpoints, catálogo, arquitectura y tests está en [`api/README.md`](api/README.md).
 
 Para los E2E, la API se levanta con `NODE_ENV=test`, que habilita `POST /__test__/reset` y `POST /__test__/seed`.
+
+## Levantar el front
+
+Con la API corriendo en otra terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev    # http://localhost:5173
+```
+
+El front llama a la API en `http://localhost:3000`. Para usar otra URL: `VITE_API_URL=http://localhost:4000 npm run dev`.
+
+## Tests del front
+
+```bash
+cd frontend
+npm test
+```
+
+| Comando | Qué corre |
+|---|---|
+| `npm test` | Tests unitarios, de componentes y de integración con Vitest. No necesita la API: MSW 2 la simula con las mismas rutas, códigos y formato de error |
+| `npm run test:watch` | Lo mismo, en modo observador |
+| `npm run typecheck` | TypeScript con `strict: true` |
+| `npm run lint` | ESLint, con la regla que prohíbe `any` |
+
+Stack: Vite 7, React 19, TypeScript, Vitest 3, React Testing Library, MSW 2, Zod 4 y Bootstrap 5 personalizado con SASS.
 
 ## Contrato de la API que usa el front
 
