@@ -66,7 +66,7 @@ export abstract class Cafe extends Producto {
     this.tamanio = tamanio;
     this.variedad = variedad;
     this.gramos = gramosPorTamanio[tamanio];
-    this.nombre = `${etiqueta} ${tamanio} ${variedad}`;
+    this.nombre = `${etiqueta} ${tamanio} ${DETALLE_VARIEDAD[variedad].nombre}`;
   }
 
   costoCafe(): number {

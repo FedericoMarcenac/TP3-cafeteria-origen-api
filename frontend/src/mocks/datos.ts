@@ -30,7 +30,7 @@ export const productosDeLaApi = [
   {
     id: 3,
     tipo: 'expreso',
-    nombre: 'Expreso Pocillo Etiopia',
+    nombre: 'Expreso Pocillo Etiopía',
     precioBase: 2500,
     precio: 6820,
     tamanio: 'Pocillo',
@@ -72,7 +72,7 @@ export const productosDeLaApi = [
   {
     id: 6,
     tipo: 'expreso',
-    nombre: 'Expreso Mediano Etiopia',
+    nombre: 'Expreso Mediano Etiopía',
     precioBase: 2500,
     precio: 8980,
     tamanio: 'Mediano',
@@ -114,7 +114,7 @@ export const productosDeLaApi = [
   {
     id: 9,
     tipo: 'expreso',
-    nombre: 'Expreso Taza grande Etiopia',
+    nombre: 'Expreso Taza grande Etiopía',
     precioBase: 2500,
     precio: 11140,
     tamanio: 'Taza grande',
@@ -156,7 +156,7 @@ export const productosDeLaApi = [
   {
     id: 12,
     tipo: 'filtrado',
-    nombre: 'Filtrado Pocillo Etiopia',
+    nombre: 'Filtrado Pocillo Etiopía',
     precioBase: 3200,
     precio: 4640,
     tamanio: 'Pocillo',
@@ -198,7 +198,7 @@ export const productosDeLaApi = [
   {
     id: 15,
     tipo: 'filtrado',
-    nombre: 'Filtrado Mediano Etiopia',
+    nombre: 'Filtrado Mediano Etiopía',
     precioBase: 3200,
     precio: 6800,
     tamanio: 'Mediano',
@@ -240,7 +240,7 @@ export const productosDeLaApi = [
   {
     id: 18,
     tipo: 'filtrado',
-    nombre: 'Filtrado Taza grande Etiopia',
+    nombre: 'Filtrado Taza grande Etiopía',
     precioBase: 3200,
     precio: 9200,
     tamanio: 'Taza grande',
