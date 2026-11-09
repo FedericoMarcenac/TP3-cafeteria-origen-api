@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { productosSchema } from '../api/esquemas';
 import { productosDeLaApi } from '../mocks/datos';
 import { SelectorCafe } from './SelectorCafe';
@@ -33,7 +33,7 @@ describe('SelectorCafe', () => {
       screen.getByRole('button', { name: 'Agregar al pedido' }),
     ).toBeDisabled();
   });
-  
+
   it('habilita el botón recién cuando se eligen bebida, tamaño y origen', async () => {
     const user = userEvent.setup();
     render(<SelectorCafe productos={productos} onAgregar={() => {}} />);
@@ -47,5 +47,19 @@ describe('SelectorCafe', () => {
 
     await user.click(screen.getByRole('radio', { name: 'Colombia' }));
     expect(boton).toBeEnabled();
+  });
+  
+  it('al agregar llama a onAgregar con el producto elegido', async () => {
+    const user = userEvent.setup();
+    const onAgregar = vi.fn();
+    render(<SelectorCafe productos={productos} onAgregar={onAgregar} />);
+
+    await user.click(screen.getByRole('radio', { name: 'Expreso' }));
+    await user.click(screen.getByRole('radio', { name: 'Mediano' }));
+    await user.click(screen.getByRole('radio', { name: 'Colombia' }));
+    await user.click(screen.getByRole('button', { name: 'Agregar al pedido' }));
+
+    expect(onAgregar).toHaveBeenCalledTimes(1);
+    expect(onAgregar).toHaveBeenCalledWith(expect.objectContaining({ id: 5 }));
   });
 });
