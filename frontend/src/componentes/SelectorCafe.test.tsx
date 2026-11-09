@@ -48,7 +48,7 @@ describe('SelectorCafe', () => {
     await user.click(screen.getByRole('radio', { name: 'Colombia' }));
     expect(boton).toBeEnabled();
   });
-  
+
   it('al agregar llama a onAgregar con el producto elegido', async () => {
     const user = userEvent.setup();
     const onAgregar = vi.fn();
@@ -61,5 +61,22 @@ describe('SelectorCafe', () => {
 
     expect(onAgregar).toHaveBeenCalledTimes(1);
     expect(onAgregar).toHaveBeenCalledWith(expect.objectContaining({ id: 5 }));
+  });
+
+  it('muestra la descripción de cada origen que viene de la API', () => {
+    render(<SelectorCafe productos={productos} onAgregar={() => {}} />);
+
+    for (const origen of ['Colombia', 'Etiopía', 'Brasil']) {
+      let descripcion: string | undefined;
+      for (const p of productos) {
+        if (p.tipo !== 'pasteleria' && p.variedad.nombre === origen) {
+          descripcion = p.variedad.descripcion;
+          break;
+        }
+      }
+      if (!descripcion) throw new Error(`No hay descripción para ${origen}`);
+
+      expect(screen.getByText(descripcion)).toBeInTheDocument();
+    }
   });
 });
