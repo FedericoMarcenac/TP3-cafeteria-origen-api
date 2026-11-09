@@ -25,6 +25,7 @@ API REST desarrollada con **Node.js, Express y TypeScript** para organizar los p
 | Node.js | Entorno de ejecución |
 | TypeScript | Tipado estático (`strict: true`) |
 | Express | Servidor y rutas |
+| cors | Permite que el front llame a la API desde otro puerto |
 | Jest + ts-jest | Framework de tests |
 | Supertest | Tests de los endpoints |
 | tsx | Modo desarrollo con recarga automática |
@@ -272,6 +273,8 @@ api/
 │   ├── app.ts                    # App Express, rutas y manejo de errores
 │   ├── server.ts                 # Arranque del servidor (listen)
 │   ├── errors.ts                 # ErrorApi: error con código HTTP
+│   ├── middlewares/
+│   │   └── errores.ts            # Ruta inexistente y manejo central de errores
 │   ├── models/
 │   │   ├── Producto.ts           # Clase base abstracta
 │   │   ├── Cafe.ts               # Lógica común de expreso y filtrado
@@ -327,6 +330,13 @@ Todos los errores responden con JSON: `{ "error": "mensaje" }`.
 | 201 | Pedido creado |
 | 400 | Pedido sin items, cantidad inválida, `productoId` o `mesaId` no entero, estado inválido o JSON mal formado |
 | 404 | Producto, pedido o mesa inexistente, o ruta inexistente |
+| 500 | Error inesperado del servidor: responde `{ "error": "Error interno del servidor" }` sin exponer el detalle, que queda en la consola |
+
+Los datos que manda el cliente nunca generan un 500: todo lo inválido es 400 y todo lo inexistente es 404.
+
+### CORS
+
+La API tiene CORS habilitado (paquete `cors`), así el front puede llamarla desde otro puerto (por ejemplo, Vite en `http://localhost:5173`).
 
 Ejemplo:
 
