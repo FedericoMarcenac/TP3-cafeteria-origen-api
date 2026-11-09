@@ -3,6 +3,26 @@ import { Producto, type ProductoJSON } from './Producto';
 export const PRECIO_POR_GRAMO = { Brasil: 140, Colombia: 180, Etiopia: 240 } as const;
 
 export type Variedad = keyof typeof PRECIO_POR_GRAMO;
+
+export interface DetalleVariedad {
+  nombre: string;
+  descripcion: string;
+}
+
+export const DETALLE_VARIEDAD: Record<Variedad, DetalleVariedad> = {
+  Brasil: {
+    nombre: 'Brasil',
+    descripcion: 'Acidez baja, cuerpo intenso y notas a chocolate y frutos secos',
+  },
+  Colombia: {
+    nombre: 'Colombia',
+    descripcion: 'Acidez media, cuerpo equilibrado y notas cítricas y florales',
+  },
+  Etiopia: {
+    nombre: 'Etiopía',
+    descripcion: 'Acidez alta, cuerpo ligero y notas a frutos rojos y jazmín',
+  },
+};
 export type Tamanio = 'Pocillo' | 'Mediano' | 'Taza grande';
 export type GramosPorTamanio = Record<Tamanio, number>;
 
@@ -20,7 +40,7 @@ interface DatosConstruccionCafe extends DatosCafe {
 
 export interface CafeJSON extends ProductoJSON {
   tamanio: Tamanio;
-  variedad: Variedad;
+  variedad: DetalleVariedad;
   gramos: number;
   costoCafe: number;
 }
@@ -61,7 +81,7 @@ export abstract class Cafe extends Producto {
     return {
       ...super.toJSON(),
       tamanio: this.tamanio,
-      variedad: this.variedad,
+      variedad: DETALLE_VARIEDAD[this.variedad],
       gramos: this.gramos,
       costoCafe: this.costoCafe(),
     };
