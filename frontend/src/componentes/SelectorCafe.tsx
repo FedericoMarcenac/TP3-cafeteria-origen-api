@@ -19,6 +19,18 @@ const BEBIDAS: { valor: Bebida; texto: string }[] = [
 const TAMANIOS: Tamanio[] = ['Pocillo', 'Mediano', 'Taza grande'];
 const ORIGENES: Origen[] = ['Colombia', 'Etiopía', 'Brasil'];
 
+function descripcionDeOrigen(
+  productos: Producto[],
+  origen: Origen,
+): string | undefined {
+  for (const p of productos) {
+    if (p.tipo !== 'pasteleria' && p.variedad.nombre === origen) {
+      return p.variedad.descripcion;
+    }
+  }
+  return undefined;
+}
+
 export function SelectorCafe({ productos, onAgregar }: Props) {
   const [eleccion, setEleccion] = useState<EleccionCafe>({});
 
@@ -88,6 +100,7 @@ export function SelectorCafe({ productos, onAgregar }: Props) {
               type="radio"
               name="origen"
               id={`origen-${o}`}
+              aria-describedby={`descripcion-${o}`}
               checked={eleccion.origen === o}
               onChange={() =>
                 setEleccion((anterior) => ({ ...anterior, origen: o }))
@@ -96,6 +109,9 @@ export function SelectorCafe({ productos, onAgregar }: Props) {
             <label className="form-check-label" htmlFor={`origen-${o}`}>
               {o}
             </label>
+            <div id={`descripcion-${o}`} className="form-text">
+              {descripcionDeOrigen(productos, o)}
+            </div>
           </div>
         ))}
       </fieldset>
