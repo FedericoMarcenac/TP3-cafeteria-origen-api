@@ -7,6 +7,7 @@ import {
   ErrorDeConexion,
   ErrorDeContrato,
   mensajeDeError,
+  obtenerPedido,
   obtenerProductos,
 } from './cliente';
 import { API_URL } from './config';
@@ -120,5 +121,22 @@ describe('crearPedido', () => {
 
     expect(error).toBeInstanceOf(ErrorDeApi);
     expect(error).toMatchObject({ message: 'Mesa 99 no encontrada', status: 404 });
+  });
+});
+
+describe('obtenerPedido', () => {
+  test('devuelve el pedido con su estado actual', async () => {
+    await crearPedido(4, ITEMS);
+
+    const pedido = await obtenerPedido(1);
+
+    expect(pedido).toMatchObject({ id: 1, mesaId: 4, estado: 'pendiente', total: 17220 });
+  });
+
+  test('si el pedido no existe, lanza ErrorDeApi 404', async () => {
+    const error = await obtenerPedido(42).catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(ErrorDeApi);
+    expect(error).toMatchObject({ message: 'Pedido 42 no encontrado', status: 404 });
   });
 });
