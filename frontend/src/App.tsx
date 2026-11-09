@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { CargaDelMenu } from './componentes/CargaDelMenu';
+import { Encabezado } from './componentes/Encabezado';
+import { leerMesa } from './dominio/mesa';
 import { useMenu } from './menu/useMenu';
 import { CarritoProvider, useCarrito } from './carrito/CarritoContext';
 import { Carrito } from './componentes/Carrito';
 import { crearPedido } from './api/cliente';
-import { leerMesa } from './dominio/mesa';
 import { Pedido } from './api/esquemas';
 
 function ContenidoApp() {
@@ -43,6 +44,7 @@ function ContenidoApp() {
       <header className="encabezado py-3">
         <div className="container">
           <h1 className="h4 mb-0">Cafetería Origen</h1>
+          <Encabezado mesa={mesaId} />
         </div>
       </header>
       <main className="container py-3" style={{ maxWidth: '375px' }}>
@@ -66,6 +68,7 @@ function ContenidoApp() {
                 ))}
               </ul>
             </section>
+
           )}
         </CargaDelMenu>
 
