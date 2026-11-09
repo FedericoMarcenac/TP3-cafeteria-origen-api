@@ -65,3 +65,7 @@ export function crearPedido(mesaId: number | undefined, items: ItemPedido[]): Pr
     body: JSON.stringify(cuerpo),
   });
 }
+
+export function obtenerPedido(id: number): Promise<Pedido> {
+  return pedir(`/pedidos/${id}`, pedidoSchema);
+}
