@@ -22,7 +22,7 @@ test.describe('Flujo de Pedido E2E y Responsividad', () => {
     await page.getByLabel(/expreso/i).check();
     await page.getByLabel(/mediano/i).check();
     await page.getByLabel(/colombia/i).check();
-    await page.getByRole('button', { name: /agregar/i }).click();
+    await page.getByRole('button', { name: 'Agregar al pedido' }).click();
 
     // Confirmar pedido desde el carrito
     await page.getByRole('button', { name: /confirmar pedido/i }).click();
