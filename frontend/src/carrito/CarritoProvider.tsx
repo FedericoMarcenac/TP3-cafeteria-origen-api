@@ -1,18 +1,7 @@
-import React, { createContext, useContext, useReducer } from 'react';
-import { carritoReducer, EstadoCarrito, ItemCarrito } from './carritoReducer';
-import { Producto } from '../api/esquemas';
-
-interface ContextoCarritoType {
-    items: ItemCarrito[];
-    subtotal: number;
-    agregar: (producto: Producto) => void;
-    sumar: (productoId: number) => void;
-    restar: (productoId: number) => void;
-    sacar: (productoId: number) => void;
-    vaciar: () => void;
-}
-
-const CarritoContext = createContext<ContextoCarritoType | undefined>(undefined);
+import React, { useReducer } from 'react';
+import type { Producto } from '../api/esquemas';
+import { carritoReducer } from './carritoReducer';
+import { CarritoContext } from './contextoCarrito';
 
 export const CarritoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [estado, dispatch] = useReducer(carritoReducer, { items: [] });
@@ -30,12 +19,4 @@ export const CarritoProvider: React.FC<{ children: React.ReactNode }> = ({ child
         {children}
         </CarritoContext.Provider>
     );
-};
-
-export const useCarrito = () => {
-    const context = useContext(CarritoContext);
-    if (!context) {
-        throw new Error('useCarrito debe usarse dentro de un CarritoProvider');
-    }
-    return context;
 };

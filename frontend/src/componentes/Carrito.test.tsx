@@ -1,11 +1,19 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import { Carrito } from './Carrito';
-import { CarritoProvider, useCarrito } from '../carrito/CarritoContext';
+import type { Producto } from '../api/esquemas';
+import { CarritoProvider } from '../carrito/CarritoProvider';
+import { useCarrito } from '../carrito/useCarrito';
 
-const productoMock = { id: 5, tipo: 'expreso', nombre: 'Expreso Mediano', precio: 7360 };
+const productoMock: Producto = {
+    id: 5,
+    tipo: 'expreso',
+    nombre: 'Expreso Mediano',
+    precio: 7360,
+    tamanio: 'Mediano',
+    variedad: { nombre: 'Colombia', descripcion: 'Acidez media, cuerpo equilibrado y notas cítricas y florales' }
+};
 
 // Componente helper para precargar el contexto en el test
 const BotonAgregarHelper = () => {
