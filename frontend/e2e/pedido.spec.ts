@@ -14,15 +14,15 @@ test.describe('Flujo de Pedido E2E y Responsividad', () => {
     // Navegar con QR de Mesa 4
     await page.goto('/?mesa=4');
 
-    // Verificar que no haya scroll horizontal
-    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
-    expect(scrollWidth).toBeLessThanOrEqual(375);
-
     // Armar el pedido de café (Expreso Mediano Colombia)
     await page.getByLabel(/expreso/i).check();
     await page.getByLabel(/mediano/i).check();
     await page.getByLabel(/colombia/i).check();
     await page.getByRole('button', { name: 'Agregar al pedido' }).click();
+
+    // Se mide con el menú cargado y el café en el carrito: recién abierta la página todavía no hay contenido
+    const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+    expect(scrollWidth).toBeLessThanOrEqual(375);
 
     // Confirmar pedido desde el carrito
     await page.getByRole('button', { name: /confirmar pedido/i }).click();
