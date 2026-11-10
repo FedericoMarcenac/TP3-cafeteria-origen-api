@@ -32,7 +32,7 @@ describe('Armar y confirmar el pedido desde la App', () => {
 
     expect(screen.getByRole('button', { name: 'Sacar Expreso Mediano Colombia' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Sacar Muffin de chocolate' })).toBeInTheDocument();
-    expect(screen.getByText('$9860')).toBeInTheDocument();
+    expect(screen.getByText('$9.860')).toBeInTheDocument();
   });
 
   test('confirma con la mesa del QR y muestra el número y el estado del pedido', async () => {
