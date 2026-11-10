@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCarrito } from '../carrito/CarritoContext';
+import { useCarrito } from '../carrito/useCarrito';
 
 interface CarritoProps {
     onConfirmar: () => void;

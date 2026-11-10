@@ -1,4 +1,4 @@
-import { Producto } from '../api/esquemas';
+import type { Producto } from '../api/esquemas';
 
 export interface ItemCarrito {
     producto: Producto;
