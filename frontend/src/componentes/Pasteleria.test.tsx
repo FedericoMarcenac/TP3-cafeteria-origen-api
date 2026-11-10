@@ -30,4 +30,17 @@ describe('Pasteleria', () => {
     expect(onAgregar).toHaveBeenCalledWith(expect.objectContaining({ id: 19 }));
   }); 
 
+  it('al tocar Agregar Torta selva negra llama a onAgregar con ese producto', async () => {
+    const user = userEvent.setup();
+    const onAgregar = vi.fn();
+    render(<Pasteleria productos={productos} onAgregar={onAgregar} />);
+
+    await user.click(
+      screen.getByRole('button', { name: /agregar torta selva negra/i }),
+    );
+
+    expect(onAgregar).toHaveBeenCalledTimes(1);
+    expect(onAgregar).toHaveBeenCalledWith(expect.objectContaining({ id: 20 }));
+  });
+  
 });
