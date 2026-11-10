@@ -8,10 +8,12 @@ import { useCarrito } from './carrito/useCarrito';
 import { leerMesa } from './dominio/mesa';
 import { useMenu } from './menu/useMenu';
 import { usePedido } from './pedido/usePedido';
+import { Pasteleria } from './componentes/Pasteleria';
+import { SelectorCafe } from './componentes/SelectorCafe';
 
 function ContenidoApp() {
   const { menu, reintentar } = useMenu();
-  const { items, vaciar } = useCarrito();
+  const { items, vaciar, agregar } = useCarrito();
   const { envio, confirmar, actualizar } = usePedido(vaciar);
 
   const mesaId = leerMesa(window.location.search);
@@ -37,19 +39,10 @@ function ContenidoApp() {
 
         <CargaDelMenu menu={menu} onReintentar={reintentar}>
           {(productos) => (
-            <section aria-labelledby="titulo-menu">
-              <h2 id="titulo-menu" className="h5">
-                Menú
-              </h2>
-              <ul className="list-group">
-                {productos.map((producto) => (
-                  <li key={producto.id} className="list-group-item">
-                    {producto.nombre}
-                  </li>
-                ))}
-              </ul>
-            </section>
-
+          <>
+            <SelectorCafe productos={productos} onAgregar={agregar} />
+            <Pasteleria productos={productos} onAgregar={agregar} />
+          </>
           )}
         </CargaDelMenu>
 

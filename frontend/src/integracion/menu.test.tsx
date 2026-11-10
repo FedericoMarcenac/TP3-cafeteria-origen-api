@@ -15,7 +15,7 @@ describe('Carga del menú desde la API', () => {
 
     expect(screen.getByRole('status')).toHaveTextContent('Cargando el menú…');
     expect(await screen.findByText('Muffin de chocolate')).toBeInTheDocument();
-    expect(screen.getByText('Expreso Mediano Colombia')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Armá tu café' })).toBeInTheDocument();
     expect(screen.queryByRole('status')).not.toBeInTheDocument();
   });
 
