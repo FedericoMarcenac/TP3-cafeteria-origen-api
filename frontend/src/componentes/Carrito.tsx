@@ -13,7 +13,7 @@ export const Carrito: React.FC<CarritoProps> = ({ onConfirmar, confirmando = fal
     if (items.length === 0) {
         return (
         <section className="carrito card p-3 mt-4">
-            <h2>Tu pedido</h2>
+            <h2 className="h5">Tu pedido</h2>
             <p>Tu pedido está vacío</p>
             <button className="btn btn-primary" disabled>
             Confirmar pedido
@@ -24,7 +24,7 @@ export const Carrito: React.FC<CarritoProps> = ({ onConfirmar, confirmando = fal
 
     return (
         <section className="carrito card p-3 mt-4">
-        <h2>Tu pedido</h2>
+        <h2 className="h5">Tu pedido</h2>
         <ul className="list-group list-group-flush mb-3">
             {items.map(({ producto, cantidad }) => (
             <li key={producto.id} className="list-group-item d-flex justify-content-between align-items-center">
