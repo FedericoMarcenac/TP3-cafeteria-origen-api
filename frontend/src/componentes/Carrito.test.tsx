@@ -52,11 +52,11 @@ describe('Componente Carrito', () => {
         // Sumar uno
         const botonSumar = screen.getByLabelText(/sumar uno de expreso mediano/i);
         await user.click(botonSumar);
-        expect(screen.getByText('$14720')).toBeInTheDocument();
+        expect(screen.getByText('$14.720')).toBeInTheDocument();
 
         // Restar uno
         const botonRestar = screen.getByLabelText(/restar uno de expreso mediano/i);
         await user.click(botonRestar);
-        expect(screen.getByText('$7360')).toBeInTheDocument();
+        expect(screen.getByText('$7.360')).toBeInTheDocument();
     });
 });

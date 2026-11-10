@@ -1,4 +1,5 @@
 import type { EstadoPedido, Pedido } from '../api/esquemas';
+import { formatearPrecio } from '../dominio/precio';
 
 interface Props {
   pedido: Pedido;
@@ -13,11 +14,6 @@ const ETIQUETAS: Record<EstadoPedido, string> = {
   entregado: 'entregado',
 };
 
-// TODO: cuando esté en main el formatearPrecio de Fede, usar ese y borrar esta función.
-function formatearTotal(valor: number): string {
-  return `$${String(valor).replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`;
-}
-
 export function Confirmacion({ pedido, onActualizar, actualizando = false, errorAlActualizar }: Props) {
   return (
     <section aria-labelledby="titulo-confirmacion" className="card card-body">
@@ -26,7 +22,7 @@ export function Confirmacion({ pedido, onActualizar, actualizando = false, error
         Estado: <strong>{ETIQUETAS[pedido.estado]}</strong>
       </p>
       <p>
-        Total: <strong>{formatearTotal(pedido.total)}</strong>
+        Total: <strong>{formatearPrecio(pedido.total)}</strong>
       </p>
       {errorAlActualizar !== undefined && (
         <div role="alert" className="alert alert-danger">

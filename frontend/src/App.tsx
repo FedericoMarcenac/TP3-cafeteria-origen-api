@@ -41,7 +41,9 @@ function ContenidoApp() {
           {(productos) => (
           <>
             <SelectorCafe productos={productos} onAgregar={agregar} />
-            <Pasteleria productos={productos} onAgregar={agregar} />
+            <div className="mt-4">
+              <Pasteleria productos={productos} onAgregar={agregar} />
+            </div>
           </>
           )}
         </CargaDelMenu>
