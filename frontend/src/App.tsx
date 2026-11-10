@@ -1,42 +1,27 @@
-import React, { useState } from 'react';
 import { CargaDelMenu } from './componentes/CargaDelMenu';
+import { Carrito } from './componentes/Carrito';
+import { Confirmacion } from './componentes/Confirmacion';
 import { Encabezado } from './componentes/Encabezado';
+import { ErrorDelPedido } from './componentes/ErrorDelPedido';
+import { CarritoProvider } from './carrito/CarritoProvider';
+import { useCarrito } from './carrito/useCarrito';
 import { leerMesa } from './dominio/mesa';
 import { useMenu } from './menu/useMenu';
-import { CarritoProvider, useCarrito } from './carrito/CarritoContext';
-import { Carrito } from './componentes/Carrito';
-import { crearPedido } from './api/cliente';
-import { Pedido } from './api/esquemas';
+import { usePedido } from './pedido/usePedido';
 
 function ContenidoApp() {
   const { menu, reintentar } = useMenu();
   const { items, vaciar } = useCarrito();
-  const [pedidoConfirmado, setPedidoConfirmado] = useState<Pedido | null>(null);
-  const [confirmando, setConfirmando] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { envio, confirmar, actualizar } = usePedido(vaciar);
 
   const mesaId = leerMesa(window.location.search);
 
-  const handleConfirmar = async () => {
-    setConfirmando(true);
-    setError(null);
-    try {
-      const itemsPayload = items.map((i) => ({
-        productoId: i.producto.id,
-        cantidad: i.cantidad,
-      }));
-      const nuevoPedido = await crearPedido(mesaId, itemsPayload);
-      setPedidoConfirmado(nuevoPedido);
-      vaciar();
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Error al enviar el pedido');
-      }
-    } finally {
-      setConfirmando(false);
-    }
+  const handleConfirmar = () => {
+    const itemsDelPedido = items.map((i) => ({
+      productoId: i.producto.id,
+      cantidad: i.cantidad,
+    }));
+    void confirmar(mesaId ?? undefined, itemsDelPedido);
   };
 
   return (
@@ -48,11 +33,7 @@ function ContenidoApp() {
         </div>
       </header>
       <main className="container py-3" style={{ maxWidth: '375px' }}>
-        {error && (
-          <div className="alert alert-danger" role="alert">
-            {error}
-          </div>
-        )}
+        {envio.estado === 'error' && <ErrorDelPedido mensaje={envio.mensaje} />}
 
         <CargaDelMenu menu={menu} onReintentar={reintentar}>
           {(productos) => (
@@ -72,8 +53,18 @@ function ContenidoApp() {
           )}
         </CargaDelMenu>
 
-        {/* Tu componente de Carrito */}
-        <Carrito onConfirmar={handleConfirmar} confirmando={confirmando} />
+        <Carrito onConfirmar={handleConfirmar} confirmando={envio.estado === 'enviando'} />
+
+        {envio.estado === 'confirmado' && (
+          <div className="mt-4">
+            <Confirmacion
+              pedido={envio.pedido}
+              onActualizar={() => void actualizar()}
+              actualizando={envio.actualizando}
+              errorAlActualizar={envio.errorAlActualizar}
+            />
+          </div>
+        )}
       </main>
     </>
   );
