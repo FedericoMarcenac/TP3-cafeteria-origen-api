@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { crearPedido, mensajeDeError, obtenerPedido } from '../api/cliente';
 import type { ItemPedido, Pedido } from '../api/esquemas';
 
@@ -14,9 +14,13 @@ export type EstadoDelEnvio =
  */
 export function usePedido(onConfirmado?: () => void) {
   const [envio, setEnvio] = useState<EstadoDelEnvio>({ estado: 'editando' });
+  // Un ref (y no el estado) porque dos llamadas en el mismo instante ven el mismo estado viejo.
+  const enviando = useRef(false);
 
   const confirmar = useCallback(
     async (mesaId: number | undefined, items: ItemPedido[]): Promise<void> => {
+      if (enviando.current) return;
+      enviando.current = true;
       setEnvio({ estado: 'enviando' });
       let pedido: Pedido;
       try {
@@ -24,6 +28,8 @@ export function usePedido(onConfirmado?: () => void) {
       } catch (error: unknown) {
         setEnvio({ estado: 'error', mensaje: mensajeDeError(error) });
         return;
+      } finally {
+        enviando.current = false;
       }
       setEnvio({ estado: 'confirmado', pedido, actualizando: false });
       onConfirmado?.();
