@@ -1,5 +1,6 @@
 import React from 'react';
 import { useCarrito } from '../carrito/useCarrito';
+import { formatearPrecio } from '../dominio/precio';
 
 interface CarritoProps {
     onConfirmar: () => void;
@@ -29,7 +30,7 @@ export const Carrito: React.FC<CarritoProps> = ({ onConfirmar, confirmando = fal
             <li key={producto.id} className="list-group-item d-flex justify-content-between align-items-center">
                 <div>
                 <strong>{producto.nombre}</strong>
-                <div>Subtotal: ${producto.precio * cantidad}</div>
+                <div>Subtotal: {formatearPrecio(producto.precio * cantidad)}</div>
                 </div>
                 <div className="btn-group role-group">
                 <button
@@ -60,7 +61,7 @@ export const Carrito: React.FC<CarritoProps> = ({ onConfirmar, confirmando = fal
         </ul>
         <div className="mb-3">
             <small className="text-muted d-block">Subtotal orientativo:</small>
-            <strong>${subtotal}</strong>
+            <strong>{formatearPrecio(subtotal)}</strong>
         </div>
         <button className="btn btn-primary w-100" onClick={onConfirmar} disabled={confirmando}>
             {confirmando ? 'Enviando...' : 'Confirmar pedido'}
