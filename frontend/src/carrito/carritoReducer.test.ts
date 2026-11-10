@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { carritoReducer, EstadoCarrito } from './carritoReducer';
-import { Producto } from '../api/esquemas';
+import { carritoReducer, type EstadoCarrito } from './carritoReducer';
+import type { Producto } from '../api/esquemas';
 
 const productoEjemplo: Producto = {
     id: 5,
     tipo: 'expreso',
     nombre: 'Expreso Mediano',
-    precio: 7360
+    precio: 7360,
+    tamanio: 'Mediano',
+    variedad: { nombre: 'Colombia', descripcion: 'Acidez media, cuerpo equilibrado y notas cítricas y florales' }
 };
 
 describe('carritoReducer', () => {
